@@ -38,7 +38,7 @@
 		</table>
 	</div>
 
-	<div class="terrible-text" style="margin-top:200px;">
+	<div class="terrible-text" style="margin-top:@(MaxTop)px;">
 		<h2>@_lastAnswer</h2>
 	</div>
 </div>
@@ -49,7 +49,7 @@
 	private string _lastAnswer = "";
 
 	private const int MaxTop = 200;
-	private const int MaxLeft = 500;
+	private const int MaxLeft = 250;
 	private readonly Random _rng = new();
 	private string _tableStyle = "";
 
@@ -62,7 +62,7 @@
 	private void UpdateHeading(int index)
 	{
 		var top = _rng.Next(0, MaxTop);
-		var left = _rng.Next(0, MaxLeft);
+		var left = _rng.Next(-MaxLeft, MaxLeft);
 		_tableStyle = $"top: {top}px; left: {left}px;";
 
 		if (_questionSets == null)
