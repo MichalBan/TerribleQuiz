@@ -1,68 +1,80 @@
 ﻿@page "/"
-@using System.Diagnostics
+@inject HttpClient Http
 
 <PageTitle>Home</PageTitle>
 
 <div class="terrible-div">
 	<div class="terrible-text">
 		<h1>Welcome to the terrible quiz</h1>
-		<h2>@_headingValue</h2>
+		<h2>@_questionSets?[_setIndex][0]</h2>
 	</div>
 
-	<div class="terrible-floater" style=@_tableStyle>
+	<div class="terrible-floater" style="@_tableStyle">
 		<table class="terrible-table">
 			<tr>
 				<th>
 					<Button class="terrible-button" @onclick="() => UpdateHeading(0)">
-						@_textList[0]
+						@_questionSets?[_setIndex][1]
 					</Button>
 				</th>
 				<th>
 					<Button class="terrible-button" @onclick="() => UpdateHeading(1)">
-						@_textList[1]
+						@_questionSets?[_setIndex][2]
 					</Button>
 				</th>
 			</tr>
 			<tr>
 				<td>
 					<Button class="terrible-button" @onclick="() => UpdateHeading(2)">
-						@_textList[2]
+						@_questionSets?[_setIndex][3]
 					</Button>
 				</td>
 				<td>
 					<Button class="terrible-button" @onclick="() => UpdateHeading(3)">
-						@_textList[3]
+						@_questionSets?[_setIndex][4]
 					</Button>
 				</td>
 			</tr>
 		</table>
 	</div>
+
+	<div class="terrible-text" style="margin-top:200px;">
+		<h2>@_lastAnswer</h2>
+	</div>
 </div>
 
 @code {
-	private string _headingValue = "no answer chosen";
-	private const string TopLeftText = "Oh no";
-	private const string TopRightText = "No";
-	private const string BotLeftText = "Please don't";
-	private const string BotRightText = ":/";
-	private readonly List<string> _textList = [TopLeftText, TopRightText, BotLeftText, BotRightText];
+	private List<List<string>>? _questionSets;
+	private int _setIndex;
+	private string _lastAnswer = "";
 
 	private const int MaxTop = 200;
 	private const int MaxLeft = 500;
 	private readonly Random _rng = new();
 	private string _tableStyle = "";
 
-	private void UpdateHeading(int index)
+	protected override async Task OnInitializedAsync()
 	{
-		UpdateHeading(_textList[index]);
+		_questionSets = await Http.GetFromJsonAsync<List<List<string>>>("questions.json");
+		_setIndex = 0;
 	}
 
-	private void UpdateHeading(string inText)
+	private void UpdateHeading(int index)
 	{
-		int top = _rng.Next(0, MaxTop);
-		int left = _rng.Next(0, MaxLeft);
-		_headingValue = inText;
+		var top = _rng.Next(0, MaxTop);
+		var left = _rng.Next(0, MaxLeft);
 		_tableStyle = $"top: {top}px; left: {left}px;";
+
+		if (_questionSets == null)
+		{
+			return;
+		}
+		_lastAnswer = $"Last answer: \"{_questionSets[_setIndex][index]}\"";
+		++_setIndex;
+		if (_setIndex >= _questionSets.Count)
+		{
+			_setIndex = 0;
+		}
 	}
 
 }
