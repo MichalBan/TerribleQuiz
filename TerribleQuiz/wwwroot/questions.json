@@ -1,5 +1,17 @@
 [
-  [ "Would you?", "Oh no", "No", "Please don't", ":/" ],
-  [ "Really?", "Oh maybe", "Maybe", "Please?", ":|" ],
-  [ "And now?", "Oh yes", "Yes", "Please do", ":3" ]
+  {
+    "Question": "Would you?",
+    "Answers": [ "Oh no", "No", "Please don't", ":/" ],
+    "CorrectIndex": 1
+  },
+  {
+    "Question": "Really?",
+    "Answers": [ "Oh maybe", "Maybe", "Please?", ":|" ],
+    "CorrectIndex": 2
+  },
+  {
+    "Question": "And now?",
+    "Answers": [ "Oh yes", "Yes", "Please do", ":3" ],
+    "CorrectIndex": 3
+  }
 ]

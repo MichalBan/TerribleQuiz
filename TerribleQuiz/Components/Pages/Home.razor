@@ -6,7 +6,7 @@
 <div class="terrible-div">
 	<div class="terrible-text">
 		<h1>Welcome to the terrible quiz</h1>
-		<h2>@_questionSets?[_setIndex][0]</h2>
+		<h2>@_questionSets?[_setIndex].Question</h2>
 	</div>
 
 	<div class="terrible-floater" style="@_tableStyle">
@@ -14,24 +14,24 @@
 			<tr>
 				<th>
 					<Button class="terrible-button" @onclick="() => UpdateHeading(0)">
-						@_questionSets?[_setIndex][1]
+						@_questionSets?[_setIndex].Answers[0]
 					</Button>
 				</th>
 				<th>
 					<Button class="terrible-button" @onclick="() => UpdateHeading(1)">
-						@_questionSets?[_setIndex][2]
+						@_questionSets?[_setIndex].Answers[1]
 					</Button>
 				</th>
 			</tr>
 			<tr>
 				<td>
 					<Button class="terrible-button" @onclick="() => UpdateHeading(2)">
-						@_questionSets?[_setIndex][3]
+						@_questionSets?[_setIndex].Answers[2]
 					</Button>
 				</td>
 				<td>
 					<Button class="terrible-button" @onclick="() => UpdateHeading(3)">
-						@_questionSets?[_setIndex][4]
+						@_questionSets?[_setIndex].Answers[3]
 					</Button>
 				</td>
 			</tr>
@@ -39,14 +39,14 @@
 	</div>
 
 	<div class="terrible-text" style="margin-top:@(MaxTop)px;">
-		<h2>@_lastAnswer</h2>
+		<h2>score: @_score</h2>
 	</div>
 </div>
 
 @code {
-	private List<List<string>>? _questionSets;
+	private List<QuestionSet>? _questionSets;
 	private int _setIndex;
-	private string _lastAnswer = "";
+	private int _score;
 
 	private const int MaxTop = 200;
 	private const int MaxLeft = 250;
@@ -55,8 +55,9 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		_questionSets = await Http.GetFromJsonAsync<List<List<string>>>("questions.json");
+		_questionSets = await Http.GetFromJsonAsync<List<QuestionSet>>("questions.json");
 		_setIndex = 0;
+		_score = 0;
 	}
 
 	private void UpdateHeading(int index)
@@ -69,7 +70,16 @@
 		{
 			return;
 		}
-		_lastAnswer = $"Last answer: \"{_questionSets[_setIndex][index]}\"";
+
+		if(index == _questionSets[_setIndex].CorrectIndex)
+		{
+			++_score;
+		}
+		else
+		{
+			--_score;
+		}
+
 		++_setIndex;
 		if (_setIndex >= _questionSets.Count)
 		{
@@ -77,4 +87,10 @@
 		}
 	}
 
+	public class QuestionSet
+	{
+		public string Question { get; set; } = string.Empty;
+		public List<string> Answers { get; set; } = [];
+		public int CorrectIndex { get; set; } = -1;
+	}
 }
